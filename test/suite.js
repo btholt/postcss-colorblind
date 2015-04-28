@@ -2,46 +2,167 @@
 var fs = require("fs")
 var postcss = require("postcss")
 var colorblindPlugin = require("..");
+var colorblind = require('color-blind');
+var chai = require('chai');
+var assert = chai.assert;
+var expect = chai.expect;
 
-var assert = require('chai').assert;
+describe('Color Transforms', function() {
+  var postCss;
 
-
-// css to be processed
-var case1 = fs.readFileSync("test/case1.css", "utf8");
-// var answer1 = fs.readFileSync("test/answer1.css", "utf8");
-// var case2 = fs.readFileSync("test/case2.css", "utf8");
-// var answer2 = fs.readFileSync("test/answer2.css", "utf8");
-// var case3 = fs.readFileSync("test/case3.css", "utf8");
-// var answer3 = fs.readFileSync("test/answer3.css", "utf8");
-
-// process css
-
-var postCss = postcss().use(colorblindPlugin());
-var processCss = function(css) {
-  return postCss
-    .process(css)
-    .css;
-};
-
-describe('Basic Functionality', function() {
-
-  it('should replace a red to green', function() {
-    var processed = processCss(case1);
-    console.log(processed);
-    // assert.equal(processed, answer1);
+  beforeEach(function() {
+    postCss = postcss();
   });
 
-  // it('should replace a border\'s to green', function() {
-  //   var processed = processCss(case2);
-  //   assert.equal(processed, answer2);
-  // });
+  it('should do a simple deuteranopia transform', function() {
+    postCss.use(colorblindPlugin('deuteranopia'));
+    var caseColor = "#FFCC00";
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      color: ${colorblind.deuteranopia(caseColor)};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should do a simple achromatopsia transform', function() {
+    postCss.use(colorblindPlugin('achromatopsia'));
+    var caseColor = "#D929E2";
+    var input = `
+    .some-color {
+      border: 3px ${caseColor} solid;
+      font-size: 12px;
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      border: 3px ${colorblind.achromatopsia(caseColor)} solid;
+      font-size: 12px;
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should do a multi tritanopia transform', function() {
+    postCss.use(colorblindPlugin('tritanopia'));
+    var caseColor = "#D929E2";
+    var caseColor2 = "#B28200";
+    var input = `
+    .some-color {
+      border: 3px ${caseColor} dashed;
+      color: ${caseColor2};
+      font-size: 12px;
+    }
+    #other-thing {
+      border-color: ${caseColor2}
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      border: 3px ${colorblind.tritanopia(caseColor)} dashed;
+      color: ${colorblind.tritanopia(caseColor2)};
+      font-size: 12px;
+    }
+    #other-thing {
+      border-color: ${colorblind.tritanopia(caseColor2)}
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
 
 });
 
-describe('Edge Cases', function() {
-  // it("shouldn't replace a color in a URL", function() {
-  //   var processed = processCss(case3);
-  //   assert.equal(processed, answer3);
-  // });
-})
+describe('Setup', function() {
+  var postCss;
 
+  beforeEach(function() {
+    postCss = postcss();
+  });
+
+  it('should assume deuteranopia given no parameter', function() {
+    postCss.use(colorblindPlugin());
+    var caseColor = "#FFCC00";
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      color: ${colorblind.deuteranopia(caseColor)};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should handle weird capitalization', function() {
+    postCss.use(colorblindPlugin('DEuTerAnopiA'));
+    var caseColor = "#FFCC00";
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      color: ${colorblind.deuteranopia(caseColor)};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should handle weird whitespace', function() {
+    postCss.use(colorblindPlugin(' deuteranopia      '));
+    var caseColor = "#FFCC00";
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      color: ${colorblind.deuteranopia(caseColor)};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should throw an error on a bad method name', function() {
+    expect(function() {
+      postCss.use(colorblindPlugin('bad method name'));
+    })
+    .to.throw();
+  });
+
+
+});
