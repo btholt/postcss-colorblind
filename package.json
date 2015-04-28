@@ -1,0 +1,35 @@
+{
+  "name": "postcss-colorblind",
+  "version": "0.1.0",
+  "description": "A PostCSS plugin to help you see your site as a colorblind person would.",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/btholt/postcss-colorblind.git"
+  },
+  "keywords": [
+    "postcssplugin",
+    "postcss",
+    "a11y",
+    "color",
+    "colorblind"
+  ],
+  "author": "Brian Holt <btholt@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/btholt/postcss-colorblind/issues"
+  },
+  "homepage": "https://github.com/btholt/postcss-colorblind#readme",
+  "devDependencies": {
+    "chai": "^2.3.0",
+    "mocha": "^2.2.4",
+    "postcss": "^4.1.6"
+  },
+  "dependencies": {
+    "color-blind": "^0.1.0",
+    "postcss-message-helpers": "^2.0.0"
+  }
+}
