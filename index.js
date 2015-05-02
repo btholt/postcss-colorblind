@@ -14,7 +14,7 @@ var applyTransform = function(inputColorObj, method) {
   }
 }
 
-module.exports = postcss.plugin('colorblind', function (opts) {
+module.exports = postcss.plugin('colorblind', function(opts) {
   opts = opts || {};
   method = opts.method ? opts.method.toLowerCase().trim() : 'deuteranopia';
   if (typeof colorblind[method] !== 'function') {

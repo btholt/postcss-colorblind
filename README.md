@@ -8,6 +8,8 @@ However, there are JavaScript bookmarklets that let you do this on the fly witho
 
 And lastly, building plugins for PostCSS is so damn easy and fun.
 
+Plugin currently works for any place a CSS color is declared in hex, named color (like `red` or `papayawhip`), rgb, rgba, hsl, and hsla. Support for images and gradients forthcoming.
+
 ## Install
 
 `npm install postcss-colorblind`

@@ -8,15 +8,15 @@ var hex = require('hex-color-regex');
 var names = require('css-color-names');
 
 var supportedMethods = {
-  'hex': 'hex',
-  'named': 'hex',
-  'rgb': 'css',
-  'hsl': 'css',
-  'rgba': 'cssa',
-  'hsla': 'cssa'
+  hex: 'hex',
+  named: 'hex',
+  rgb: 'css',
+  hsl: 'css',
+  rgba: 'cssa',
+  hsla: 'cssa'
 };
 
-module.exports = { 
+module.exports = {
   transform: function(inputToken, method) {
     var obj = { original: inputToken };
     var token = inputToken.toLowerCase();
@@ -34,7 +34,7 @@ module.exports = {
     else if (rgba().test(token)) {
       type = 'rgba';
     }
-    else if (hex().test(token)) {
+    else if (hex({strict:true}).test(token)) {
       type = 'hex';
     }
     else if (names[token]) {

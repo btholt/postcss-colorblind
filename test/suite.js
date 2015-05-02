@@ -1,6 +1,4 @@
-// dependencies
-var fs = require("fs")
-var postcss = require("postcss")
+var postcss = require("postcss");
 var colorblindPlugin = require("..");
 var colorTransformer = require('../src/color-transformer');
 var colorNames = require('css-color-names');
@@ -32,10 +30,13 @@ describe('Interal Color Transformer', function() {
     var hexColor3 = "#D8BFD8";
     var caseColor4 = "BlanchedAlmond";
     var hexColor4 = "#FFEBCD";
+    var caseColor5 = "rebeccaPurple";
+    var hexColor5 = "#639";
     assert.equal(colorTransformer.transform(caseColor, 'deuteranopia'), colorblind.deuteranopia(hexColor));
     assert.equal(colorTransformer.transform(caseColor2, 'deuteranopia'), colorblind.deuteranopia(hexColor2));
     assert.equal(colorTransformer.transform(caseColor3, 'deuteranopia'), colorblind.deuteranopia(hexColor3));
     assert.equal(colorTransformer.transform(caseColor4, 'deuteranopia'), colorblind.deuteranopia(hexColor4));
+    assert.equal(colorTransformer.transform(caseColor5, 'deuteranopia'), colorblind.deuteranopia(hexColor5));
   });
 
   it('should transform rgb', function() {
@@ -60,10 +61,44 @@ describe('Interal Color Transformer', function() {
     var rgbaColor3 = "rgba(150,50,50,.4)";
     var hexColor3 = "#963232";
     var alpha3 = .4;
-    
+
     assert.equal(colorTransformer.transform(rgbaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
     assert.equal(colorTransformer.transform(rgbaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
     assert.equal(colorTransformer.transform(rgbaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
+  });
+
+  it('should transform hsl', function() {
+    var hslColor = "hsl(30, 50%, 50%)";
+    var hexColor = "#BF8040";
+    var hslColor2 = "hsl(100, 80%, 30%)";
+    var hexColor2 = "#388A0F";
+    var hslColor3 = "hsl(150,50%,50%)";
+    var hexColor3 = "#40BF80";
+    assert.equal(colorTransformer.transform(hslColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
+    assert.equal(colorTransformer.transform(hslColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
+    assert.equal(colorTransformer.transform(hslColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
+  });
+
+  it('should transform hsla', function() {
+    var hslaColor = "hsla(30, 50%, 50%, 1)";
+    var hexColor = "#BF8040";
+    var alpha = 1
+    var hslaColor2 = "hsla(100, 80%, 30%, 0)";
+    var hexColor2 = "#388A0F";
+    var alpha2 = 0;
+    var hslaColor3 = "hsla(150,50%,50%,.4)";
+    var hexColor3 = "#40BF80";
+    var alpha3 = .4;
+
+    assert.equal(colorTransformer.transform(hslaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
+    assert.equal(colorTransformer.transform(hslaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
+    assert.equal(colorTransformer.transform(hslaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
+  });
+
+  it('should not transform not-color tokens', function() {
+    assert.equal(colorTransformer.transform('3px'), '3px');
+    assert.equal(colorTransformer.transform('not a color'), 'not a color');
+    assert.equal(colorTransformer.transform('http://www.bluehost.com/index.html#f06d06'), 'http://www.bluehost.com/index.html#f06d06');
   });
 
 });
@@ -173,10 +208,105 @@ describe('PostCSS Plugin', function() {
     assert.equal(processed, answer);
   });
 
-  xit('should do a rgb transform', function() {
-    console.log(colorTransformer._applyColorTransform('rgba(100,200,150,.4)', 'rgba', 'deuteranopia'));
+  it('should do a rgb transform', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = 'rgb(100,200,150)';
+    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'rgb', 'deuteranopia');
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+    var answer = `
+    .some-color {
+      color: ${transformedColor};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
   });
 
+  it('should do a rgba transform', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = 'rgba(100,200,150,.4)';
+    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'rgba', 'deuteranopia');
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+    var answer = `
+    .some-color {
+      color: ${transformedColor};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should do a hsl transform', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = "hsl(120, 30%, 80%)";
+    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'hsl', 'deuteranopia');
+    var input = `
+    .some-color {
+      color: ${onecolor(caseColor).css()};
+    }
+    `;
+    var answer = `
+    .some-color {
+      color: ${transformedColor};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should do a hsla transform', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = "hsla(120, 30%, 80%, .8)";
+    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'hsla', 'deuteranopia');
+    var input = `
+    .some-color {
+      color: ${onecolor(caseColor).cssa()};
+    }
+    `;
+    var answer = `
+    .some-color {
+      color: ${transformedColor};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should do no transforms on a CSS file with no colors', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var input = `
+    .some-thing #blue {
+      background-image: url(blue.jpg);
+      display: inline-block;
+    }
+    h1.other-thing {
+      background-image: url('http://www.example.com/red/blue#333');
+      border-color: transparent;
+      display: flex;
+      color: lolnotacolor;
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, input);
+  });
 
 });
 
@@ -274,6 +404,5 @@ describe('PostCSS Plugin Edge Cases', function() {
     })
     .to.throw();
   });
-
 
 });

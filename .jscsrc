@@ -1,0 +1,10 @@
+{
+  "preset": "airbnb",
+  "esnext": true,
+  "validateQuoteMarks": null,
+  "requirePaddingNewLinesAfterBlocks": null,
+  "disallowMultipleVarDecl": null,
+  "excludeFiles": [
+    "node_modules/**"
+  ]
+}
