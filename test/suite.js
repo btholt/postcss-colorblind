@@ -14,7 +14,7 @@ describe('Color Transforms', function() {
     postCss = postcss();
   });
 
-  it('should do a simple deuteranopia transform', function() {
+  it('should do a simple hex deuteranopia transform', function() {
     postCss.use(colorblindPlugin('deuteranopia'));
     var caseColor = "#FFCC00";
     var input = `
@@ -34,7 +34,7 @@ describe('Color Transforms', function() {
     assert.equal(processed, answer);
   });
 
-  it('should do a simple achromatopsia transform', function() {
+  it('should do a simple hex achromatopsia transform', function() {
     postCss.use(colorblindPlugin('achromatopsia'));
     var caseColor = "#D929E2";
     var input = `
@@ -56,10 +56,35 @@ describe('Color Transforms', function() {
     assert.equal(processed, answer);
   });
 
+  it('should do a simple named color deuteranopia transform', function() {
+    postCss.use(colorblindPlugin('deuteranopia'));
+    var caseColor = "red";
+    var ansColor = colorblind.deuteranopia('#f00');
+    var input = `
+    .some-color {
+      border: 3px ${caseColor} solid;
+      font-size: 12px;
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      border: 3px ${ansColor} solid;
+      font-size: 12px;
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
   it('should do a multi tritanopia transform', function() {
     postCss.use(colorblindPlugin('tritanopia'));
     var caseColor = "#D929E2";
     var caseColor2 = "#B28200";
+    var caseColor3 = 'green';
+    var ansColor3 = colorblind.tritanopia('#0f0');
     var input = `
     .some-color {
       border: 3px ${caseColor} dashed;
@@ -67,7 +92,7 @@ describe('Color Transforms', function() {
       font-size: 12px;
     }
     #other-thing {
-      border-color: ${caseColor2}
+      border-color: ${caseColor3}
     }
     `;
 
@@ -78,7 +103,7 @@ describe('Color Transforms', function() {
       font-size: 12px;
     }
     #other-thing {
-      border-color: ${colorblind.tritanopia(caseColor2)}
+      border-color: ${ansColor3}
     }
     `;
     var processed = postCss
@@ -149,6 +174,27 @@ describe('Setup', function() {
     var answer = `
     .some-color {
       color: ${colorblind.deuteranopia(caseColor)};
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
+  it('should handle capitalized color names', function() {
+    postCss.use(colorblindPlugin('deuteranopia'));
+    var caseColor = "BLuE";
+    var ansColor = colorblind.deuteranopia('#00f');
+    var input = `
+    .some-color {
+      color: ${caseColor};
+    }
+    `;
+
+    var answer = `
+    .some-color {
+      color: ${ansColor};
     }
     `;
     var processed = postCss
