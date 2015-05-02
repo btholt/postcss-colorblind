@@ -2,6 +2,7 @@
 var fs = require("fs")
 var postcss = require("postcss")
 var colorblindPlugin = require("..");
+var colorNames = require('css-color-names');
 var colorblind = require('color-blind');
 var chai = require('chai');
 var assert = chai.assert;
@@ -15,7 +16,7 @@ describe('Color Transforms', function() {
   });
 
   it('should do a simple hex deuteranopia transform', function() {
-    postCss.use(colorblindPlugin('deuteranopia'));
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = "#FFCC00";
     var input = `
     .some-color {
@@ -35,7 +36,7 @@ describe('Color Transforms', function() {
   });
 
   it('should do a simple hex achromatopsia transform', function() {
-    postCss.use(colorblindPlugin('achromatopsia'));
+    postCss.use(colorblindPlugin({method:'achromatopsia'}));
     var caseColor = "#D929E2";
     var input = `
     .some-color {
@@ -57,9 +58,9 @@ describe('Color Transforms', function() {
   });
 
   it('should do a simple named color deuteranopia transform', function() {
-    postCss.use(colorblindPlugin('deuteranopia'));
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = "red";
-    var ansColor = colorblind.deuteranopia('#f00');
+    var ansColor = colorblind.deuteranopia(colorNames[caseColor]);
     var input = `
     .some-color {
       border: 3px ${caseColor} solid;
@@ -80,11 +81,11 @@ describe('Color Transforms', function() {
   });
 
   it('should do a multi tritanopia transform', function() {
-    postCss.use(colorblindPlugin('tritanopia'));
+    postCss.use(colorblindPlugin({method:'tritanopia'}));
     var caseColor = "#D929E2";
     var caseColor2 = "#B28200";
-    var caseColor3 = 'green';
-    var ansColor3 = colorblind.tritanopia('#0f0');
+    var caseColor3 = "lime";
+    var ansColor3 = colorblind.tritanopia(colorNames[caseColor3]);
     var input = `
     .some-color {
       border: 3px ${caseColor} dashed;
@@ -143,7 +144,7 @@ describe('Setup', function() {
   });
 
   it('should handle weird capitalization', function() {
-    postCss.use(colorblindPlugin('DEuTerAnopiA'));
+    postCss.use(colorblindPlugin({method:'DEuTerAnopiA'}));
     var caseColor = "#FFCC00";
     var input = `
     .some-color {
@@ -163,7 +164,7 @@ describe('Setup', function() {
   });
 
   it('should handle weird whitespace', function() {
-    postCss.use(colorblindPlugin(' deuteranopia      '));
+    postCss.use(colorblindPlugin({method:' deuteranopia      '}));
     var caseColor = "#FFCC00";
     var input = `
     .some-color {
@@ -183,9 +184,9 @@ describe('Setup', function() {
   });
 
   it('should handle capitalized color names', function() {
-    postCss.use(colorblindPlugin('deuteranopia'));
-    var caseColor = "BLuE";
-    var ansColor = colorblind.deuteranopia('#00f');
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = "ALICebLuE";
+    var ansColor = colorblind.deuteranopia(colorNames[caseColor.toLowerCase()]);
     var input = `
     .some-color {
       color: ${caseColor};
@@ -205,7 +206,7 @@ describe('Setup', function() {
 
   it('should throw an error on a bad method name', function() {
     expect(function() {
-      postCss.use(colorblindPlugin('bad method name'));
+      postCss.use(colorblindPlugin({method:'bad method name'}));
     })
     .to.throw();
   });

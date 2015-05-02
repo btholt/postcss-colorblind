@@ -1,14 +1,9 @@
 var helpers = require("postcss-message-helpers");
 var colorblind = require('color-blind');
+var colorNames = require('css-color-names');
+var postcss = require('postcss');
 var hexRegEx = /^#(?:[0-9a-f]{3}){1,2}$/i;
 
-var colorNames = {
-  white: "#fff",
-  black: "#000",
-  red: "#f00",
-  blue: "#00f",
-  green: "#0f0"
-};
 
 var convertToken = function(tokenInput, method) {
   var token = tokenInput.toLowerCase();
@@ -25,13 +20,12 @@ var convertToken = function(tokenInput, method) {
   }
 };
 
-module.exports = function plugin(method) {
-  method = method ? method.toLowerCase().trim() : 'deuteranopia';
-
+module.exports = postcss.plugin('colorblind', function (opts) {
+  opts = opts || {};
+  method = opts.method ? opts.method.toLowerCase().trim() : 'deuteranopia';
   if (typeof colorblind[method] !== 'function') {
     throw new Error('postcss-colorblind was given an invalid color transform: ' + method);
   }
-
   return function(style) {
     style.eachDecl(function transformDecl(decl) {
       helpers.try(function() {
@@ -43,4 +37,4 @@ module.exports = function plugin(method) {
       }, decl.source);
     });
   };
-};
+});

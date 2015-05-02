@@ -24,15 +24,17 @@ var colorblindPlugin = require("postcss-colorblind");
 var css = fs.readFileSync("input.css", "utf8");
 
 var processed = postcss()
-  .use(colorblindPlugin('achromatopsia'))
+  .use(colorblindPlugin(method:{'achromatopsia'}))
   .process(css)
   .css;
 fs.writeFileSync('output.css', processed);
 ```
 
-## Options
+## Parameters
 
-The module expects a method name that it can give to the [color-blind](https://github.com/skratchdot/color-blind) module. Thus, as of writing, any of the following will work:
+### method _(default: deuteranopia)_
+
+The module expects an object with a method name that it can give to the [color-blind](https://github.com/skratchdot/color-blind) module. Thus, as of writing, any of the following will work:
 
 - protanomaly
 - protanopia
