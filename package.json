@@ -1,6 +1,6 @@
 {
   "name": "postcss-colorblind",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A PostCSS plugin to help you see your site as a colorblind person would.",
   "main": "index.js",
   "scripts": {
@@ -11,7 +11,7 @@
     "url": "git+https://github.com/btholt/postcss-colorblind.git"
   },
   "keywords": [
-    "postcssplugin",
+    "postcss-plugin",
     "postcss",
     "a11y",
     "color",
