@@ -24,7 +24,7 @@ var colorblindPlugin = require("postcss-colorblind");
 var css = fs.readFileSync("input.css", "utf8");
 
 var processed = postcss()
-  .use(colorblindPlugin(method:{'achromatopsia'}))
+  .use(colorblindPlugin({method:'achromatopsia'}))
   .process(css)
   .css;
 fs.writeFileSync('output.css', processed);
