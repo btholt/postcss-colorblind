@@ -30,7 +30,13 @@
   "dependencies": {
     "color-blind": "^0.1.0",
     "css-color-names": "0.0.1",
+    "hex-color-regex": "^1.0.1",
+    "hsl-regex": "^1.0.0",
+    "hsla-regex": "^1.0.0",
+    "onecolor": "^2.5.0",
     "postcss": "^4.1.6",
-    "postcss-message-helpers": "^2.0.0"
+    "postcss-message-helpers": "^2.0.0",
+    "rgb-regex": "^1.0.1",
+    "rgba-regex": "^1.0.0"
   }
 }
