@@ -32,7 +32,7 @@
   "dependencies": {
     "color-blind": "^0.1.0",
     "css-color-names": "0.0.1",
-    "hex-color-regex": "git@github.com:btholt/hex-color-regex.git",
+    "hex-color-regex": "https://github.com/btholt/hex-color-regex.git",
     "hsl-regex": "^1.0.0",
     "hsla-regex": "^1.0.0",
     "onecolor": "^2.5.0",
