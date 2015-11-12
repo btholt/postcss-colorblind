@@ -21,6 +21,26 @@ describe('Interal Color Transformer', function() {
     assert.equal(colorTransformer.transform(caseColor4, 'deuteranopia'), colorblind.deuteranopia(caseColor4));
   });
 
+  it('should transform hexa', function() {
+    var hexaColor = "#1234";
+    var hexColor = "#123";
+    var opacity = '0.45';
+    var hexaColor2 = "#9344ABCD";
+    var hexColor2 = "#9344AB";
+    var opacity2 = '0.45';
+    var hexaColor3 = "#FFFFFFFF";
+    var hexColor3 = "#FFFFFF";
+    var opacity3 = '0.45';
+    var hexaColor4 = "#0000";
+    var hexColor4 = "#000";
+    var opacity4 = '0.45';
+
+    assert.equal(colorTransformer.transform(hexaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(opacity).cssa());
+    assert.equal(colorTransformer.transform(hexaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(opacity2).cssa());
+    assert.equal(colorTransformer.transform(hexaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(opacity3).cssa());
+    assert.equal(colorTransformer.transform(hexaColor4, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor4)).alpha(opacity4).cssa());
+  });
+
   it('should transform named colors', function() {
     var caseColor = "mediumSeaGreen";
     var hexColor = "#3CB371";
