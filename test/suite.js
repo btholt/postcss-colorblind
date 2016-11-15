@@ -418,6 +418,21 @@ describe('PostCSS Plugin Edge Cases', function() {
     assert.equal(processed, answer);
   });
 
+  it('should not mangle font names', function() {
+    postCss.use(colorblindPlugin());
+    var caseColor = "ALICebLuE";
+    var input = `
+    .some-font {
+      font-family: 'Helvetica Neue', sans-serif;
+    }
+    `;
+
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, input);
+  });
+
   it('should throw an error on a bad method name', function() {
     expect(function() {
       postCss.use(colorblindPlugin({method:'bad method name'}));

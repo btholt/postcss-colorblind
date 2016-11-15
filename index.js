@@ -3,6 +3,8 @@ var colorblind = require('color-blind');
 var postcss = require('postcss');
 var colorCreater = require('./src/color-transformer');
 
+var space = postcss.list.space;
+
 var name = 'postcss-colorblind';
 
 module.exports = postcss.plugin(name, function(opts) {
@@ -14,7 +16,7 @@ module.exports = postcss.plugin(name, function(opts) {
   return function(style) {
     style.walkDecls(function transformDecl(decl) {
       helpers.try(function() {
-        var stringArray = decl.value.toLowerCase().split(' ');
+        var stringArray = space(decl.value);
         var changed = stringArray.map(function(token) {
           return colorCreater.transform(token, method);
         });
