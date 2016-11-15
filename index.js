@@ -12,7 +12,7 @@ module.exports = postcss.plugin(name, function(opts) {
     throw new Error(name + ' was given an invalid color transform: ' + method);
   }
   return function(style) {
-    style.eachDecl(function transformDecl(decl) {
+    style.walkDecls(function transformDecl(decl) {
       helpers.try(function() {
         var stringArray = decl.value.toLowerCase().split(' ');
         var changed = stringArray.map(function(token) {
