@@ -20,7 +20,6 @@ var supportedMethods = {
 
 module.exports = {
   transform: function(inputToken, method) {
-    var obj = { original: inputToken };
     var token = inputToken.toLowerCase();
     var ans, type;
 
