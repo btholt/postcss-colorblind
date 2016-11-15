@@ -4,7 +4,7 @@
   "description": "A PostCSS plugin to help you see your site as a colorblind person would.",
   "main": "index.js",
   "scripts": {
-    "test": "mocha",
+    "test": "nyc mocha",
     "lint": "jscs ./**/*.js"
   },
   "repository": {
@@ -26,8 +26,9 @@
   },
   "homepage": "https://github.com/btholt/postcss-colorblind#readme",
   "devDependencies": {
-    "chai": "^2.3.0",
-    "mocha": "^2.2.4"
+    "chai": "^3.5.0",
+    "mocha": "^3.1.2",
+    "nyc": "^9.0.1"
   },
   "dependencies": {
     "color-blind": "^0.1.0",

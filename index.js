@@ -3,22 +3,13 @@ var colorblind = require('color-blind');
 var postcss = require('postcss');
 var colorCreater = require('./src/color-transformer');
 
-var applyTransform = function(inputColorObj, method) {
-  var newColorObj = onecolor(colorblind[method](inputColorObj.color.hex()));
+var name = 'postcss-colorblind';
 
-  if (supportedMethods[inputColorObj.type]) {
-    return newColorObj[supportedMethods[inputColorObj.type]]();
-  }
-  else {
-    return newColorObj.hex();
-  }
-}
-
-module.exports = postcss.plugin('colorblind', function(opts) {
+module.exports = postcss.plugin(name, function(opts) {
   opts = opts || {};
   method = opts.method ? opts.method.toLowerCase().trim() : 'deuteranopia';
   if (typeof colorblind[method] !== 'function') {
-    throw new Error('postcss-colorblind was given an invalid color transform: ' + method);
+    throw new Error(name + ' was given an invalid color transform: ' + method);
   }
   return function(style) {
     style.eachDecl(function transformDecl(decl) {
