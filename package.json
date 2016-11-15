@@ -33,6 +33,7 @@
     "color-blind": "^0.1.0",
     "css-color-names": "0.0.1",
     "hex-color-regex": "https://github.com/btholt/hex-color-regex.git",
+    "hexa-color-regex": "1.0.0",
     "hsl-regex": "^1.0.0",
     "hsla-regex": "^1.0.0",
     "onecolor": "^2.5.0",
