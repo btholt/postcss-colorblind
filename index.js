@@ -1,11 +1,26 @@
-var helpers = require("postcss-message-helpers");
+var helpers = require('postcss-message-helpers');
+var valueParser = require('postcss-value-parser');
 var colorblind = require('color-blind');
 var postcss = require('postcss');
 var colorTransformer = require('./src/color-transformer');
 
-var space = postcss.list.space;
+var stringify = valueParser.stringify;
 
 var name = 'postcss-colorblind';
+
+function transformValue(decl, method) {
+  helpers.try(function() {
+    decl.value = valueParser(decl.value).walk(function(node) {
+      if (node.type === 'function' && ~['hsl', 'hsla', 'rgb', 'rgba'].indexOf(node.value.toLowerCase())) {
+        var value = colorTransformer(stringify(node), method);
+        node.type = 'word';
+        node.value = value;
+      } else if (node.type === 'word') {
+        node.value = colorTransformer(node.value, method);
+      }
+    }).toString();
+  }, decl.source);
+}
 
 module.exports = postcss.plugin(name, function(opts) {
   opts = opts || {};
@@ -15,13 +30,7 @@ module.exports = postcss.plugin(name, function(opts) {
   }
   return function(style) {
     style.walkDecls(function transformDecl(decl) {
-      helpers.try(function() {
-        var stringArray = space(decl.value);
-        var changed = stringArray.map(function(token) {
-          return colorTransformer(token, method);
-        });
-        decl.value = changed.join(' ');
-      }, decl.source);
+      return transformValue(decl, method);
     });
   };
 });

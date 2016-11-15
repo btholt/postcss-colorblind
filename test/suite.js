@@ -308,6 +308,26 @@ describe('PostCSS Plugin', function() {
     assert.equal(processed, answer);
   });
 
+  it('should work inside gradients', function() {
+    postCss.use(colorblindPlugin({method:'deuteranopia'}));
+    var caseColor = "hsla(120, 30%, 80%, .8)";
+    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
+    var input = `
+    .some-color {
+      background: linear-gradient(#000000, ${onecolor(caseColor).cssa()});
+    }
+    `;
+    var answer = `
+    .some-color {
+      background: linear-gradient(#000000, ${transformedColor});
+    }
+    `;
+    var processed = postCss
+      .process(input)
+      .css;
+    assert.equal(processed, answer);
+  });
+
   it('should do no transforms on a CSS file with no colors', function() {
     postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var input = `
@@ -420,7 +440,6 @@ describe('PostCSS Plugin Edge Cases', function() {
 
   it('should not mangle font names', function() {
     postCss.use(colorblindPlugin());
-    var caseColor = "ALICebLuE";
     var input = `
     .some-font {
       font-family: 'Helvetica Neue', sans-serif;
