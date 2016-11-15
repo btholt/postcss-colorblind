@@ -15,10 +15,10 @@ describe('Interal Color Transformer', function() {
     var caseColor2 = "#000";
     var caseColor3 = "#fff";
     var caseColor4 = "#f06d06";
-    assert.equal(colorTransformer.transform(caseColor, 'deuteranopia'), colorblind.deuteranopia(caseColor));
-    assert.equal(colorTransformer.transform(caseColor2, 'deuteranopia'), colorblind.deuteranopia(caseColor2));
-    assert.equal(colorTransformer.transform(caseColor3, 'deuteranopia'), colorblind.deuteranopia(caseColor3));
-    assert.equal(colorTransformer.transform(caseColor4, 'deuteranopia'), colorblind.deuteranopia(caseColor4));
+    assert.equal(colorTransformer(caseColor, 'deuteranopia'), colorblind.deuteranopia(caseColor));
+    assert.equal(colorTransformer(caseColor2, 'deuteranopia'), colorblind.deuteranopia(caseColor2));
+    assert.equal(colorTransformer(caseColor3, 'deuteranopia'), colorblind.deuteranopia(caseColor3));
+    assert.equal(colorTransformer(caseColor4, 'deuteranopia'), colorblind.deuteranopia(caseColor4));
   });
 
   it('should transform hexa', function() {
@@ -35,10 +35,10 @@ describe('Interal Color Transformer', function() {
     var hexColor4 = "#000";
     var opacity4 = '0.45';
 
-    assert.equal(colorTransformer.transform(hexaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(opacity).cssa());
-    assert.equal(colorTransformer.transform(hexaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(opacity2).cssa());
-    assert.equal(colorTransformer.transform(hexaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(opacity3).cssa());
-    assert.equal(colorTransformer.transform(hexaColor4, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor4)).alpha(opacity4).cssa());
+    assert.equal(colorTransformer(hexaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(opacity).cssa());
+    assert.equal(colorTransformer(hexaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(opacity2).cssa());
+    assert.equal(colorTransformer(hexaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(opacity3).cssa());
+    assert.equal(colorTransformer(hexaColor4, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor4)).alpha(opacity4).cssa());
   });
 
   it('should transform named colors', function() {
@@ -52,11 +52,11 @@ describe('Interal Color Transformer', function() {
     var hexColor4 = "#FFEBCD";
     var caseColor5 = "rebeccaPurple";
     var hexColor5 = "#639";
-    assert.equal(colorTransformer.transform(caseColor, 'deuteranopia'), colorblind.deuteranopia(hexColor));
-    assert.equal(colorTransformer.transform(caseColor2, 'deuteranopia'), colorblind.deuteranopia(hexColor2));
-    assert.equal(colorTransformer.transform(caseColor3, 'deuteranopia'), colorblind.deuteranopia(hexColor3));
-    assert.equal(colorTransformer.transform(caseColor4, 'deuteranopia'), colorblind.deuteranopia(hexColor4));
-    assert.equal(colorTransformer.transform(caseColor5, 'deuteranopia'), colorblind.deuteranopia(hexColor5));
+    assert.equal(colorTransformer(caseColor, 'deuteranopia'), colorblind.deuteranopia(hexColor));
+    assert.equal(colorTransformer(caseColor2, 'deuteranopia'), colorblind.deuteranopia(hexColor2));
+    assert.equal(colorTransformer(caseColor3, 'deuteranopia'), colorblind.deuteranopia(hexColor3));
+    assert.equal(colorTransformer(caseColor4, 'deuteranopia'), colorblind.deuteranopia(hexColor4));
+    assert.equal(colorTransformer(caseColor5, 'deuteranopia'), colorblind.deuteranopia(hexColor5));
   });
 
   it('should transform rgb', function() {
@@ -66,9 +66,9 @@ describe('Interal Color Transformer', function() {
     var hexColor2 = "#64C800";
     var rgbColor3 = "rgb(150,50,50)";
     var hexColor3 = "#963232";
-    assert.equal(colorTransformer.transform(rgbColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
-    assert.equal(colorTransformer.transform(rgbColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
-    assert.equal(colorTransformer.transform(rgbColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
+    assert.equal(colorTransformer(rgbColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
+    assert.equal(colorTransformer(rgbColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
+    assert.equal(colorTransformer(rgbColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
   });
 
   it('should transform rgba', function() {
@@ -82,9 +82,9 @@ describe('Interal Color Transformer', function() {
     var hexColor3 = "#963232";
     var alpha3 = .4;
 
-    assert.equal(colorTransformer.transform(rgbaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
-    assert.equal(colorTransformer.transform(rgbaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
-    assert.equal(colorTransformer.transform(rgbaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
+    assert.equal(colorTransformer(rgbaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
+    assert.equal(colorTransformer(rgbaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
+    assert.equal(colorTransformer(rgbaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
   });
 
   it('should transform hsl', function() {
@@ -94,9 +94,9 @@ describe('Interal Color Transformer', function() {
     var hexColor2 = "#388A0F";
     var hslColor3 = "hsl(150,50%,50%)";
     var hexColor3 = "#40BF80";
-    assert.equal(colorTransformer.transform(hslColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
-    assert.equal(colorTransformer.transform(hslColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
-    assert.equal(colorTransformer.transform(hslColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
+    assert.equal(colorTransformer(hslColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
+    assert.equal(colorTransformer(hslColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
+    assert.equal(colorTransformer(hslColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
   });
 
   it('should transform hsla', function() {
@@ -110,15 +110,15 @@ describe('Interal Color Transformer', function() {
     var hexColor3 = "#40BF80";
     var alpha3 = .4;
 
-    assert.equal(colorTransformer.transform(hslaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
-    assert.equal(colorTransformer.transform(hslaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
-    assert.equal(colorTransformer.transform(hslaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
+    assert.equal(colorTransformer(hslaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
+    assert.equal(colorTransformer(hslaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
+    assert.equal(colorTransformer(hslaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
   });
 
   it('should not transform not-color tokens', function() {
-    assert.equal(colorTransformer.transform('3px'), '3px');
-    assert.equal(colorTransformer.transform('not a color'), 'not a color');
-    assert.equal(colorTransformer.transform('http://www.bluehost.com/index.html#f06d06'), 'http://www.bluehost.com/index.html#f06d06');
+    assert.equal(colorTransformer('3px'), '3px');
+    assert.equal(colorTransformer('not a color'), 'not a color');
+    assert.equal(colorTransformer('http://www.bluehost.com/index.html#f06d06'), 'http://www.bluehost.com/index.html#f06d06');
   });
 
 });
@@ -231,7 +231,7 @@ describe('PostCSS Plugin', function() {
   it('should do a rgb transform', function() {
     postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = 'rgb(100,200,150)';
-    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'rgb', 'deuteranopia');
+    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
     var input = `
     .some-color {
       color: ${caseColor};
@@ -251,7 +251,7 @@ describe('PostCSS Plugin', function() {
   it('should do a rgba transform', function() {
     postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = 'rgba(100,200,150,.4)';
-    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'rgba', 'deuteranopia');
+    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
     var input = `
     .some-color {
       color: ${caseColor};
@@ -271,7 +271,7 @@ describe('PostCSS Plugin', function() {
   it('should do a hsl transform', function() {
     postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = "hsl(120, 30%, 80%)";
-    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'hsl', 'deuteranopia');
+    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
     var input = `
     .some-color {
       color: ${onecolor(caseColor).css()};
@@ -291,7 +291,7 @@ describe('PostCSS Plugin', function() {
   it('should do a hsla transform', function() {
     postCss.use(colorblindPlugin({method:'deuteranopia'}));
     var caseColor = "hsla(120, 30%, 80%, .8)";
-    var transformedColor = colorTransformer._applyColorTransform(caseColor, 'hsla', 'deuteranopia');
+    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
     var input = `
     .some-color {
       color: ${onecolor(caseColor).cssa()};

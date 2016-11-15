@@ -18,67 +18,69 @@ var supportedMethods = {
   hsla: 'cssa'
 };
 
-module.exports = {
-  transform: function(inputToken, method) {
-    var token = inputToken.toLowerCase();
-    var ans, type;
+function transform(inputToken, method) {
+  var token = inputToken.toLowerCase();
+  var ans, type;
 
-    if (hsl().test(token)) {
-      type = 'hsl';
-    }
-    else if (hsla().test(token)) {
-      type = 'hsla';
-    }
-    else if (rgb().test(token)) {
-      type = 'rgb';
-    }
-    else if (rgba().test(token)) {
-      type = 'rgba';
-    }
-    else if (hex({strict:true}).test(token)) {
-      type = 'hex';
-    }
-    else if (hexa({strict:true}).test(token)) {
-      type = 'hexa';
-    }
-    else if (names[token]) {
-      type = 'named';
-    }
-    else {
-      return inputToken;
-    }
-    return this._applyColorTransform(token, type, method);
-  },
-  _applyColorTransform: function(color, type, colorblindTransform) {
-    var preTransformColor;
-    var opacity;
-    if (type === 'hexa') {
-      var hexaObject = this._separateHexa(color);
-      preTransformColor = onecolor(hexaObject.hex);
-      opacity = hexaObject.opacity;
-    }
-    else {
-      preTransformColor = onecolor(color)
-      opacity = preTransformColor.alpha();
-    }
-    var colorblindHex = colorblind[colorblindTransform](preTransformColor.hex());
-    var postTransformColor = onecolor(colorblindHex);
-    var opacityAppliedColor = postTransformColor.alpha(opacity);
-    return opacityAppliedColor[supportedMethods[type]]();
-  },
-  _separateHexa(hexa) {
-    var opacityHex;
-    var colorHex;
-    if (hexa.length > 5) {
-      opacityHex = hexa.substr(-2);
-      colorHex = hexa.substr(-8, 6);
-    }
-    else {
-      opacityHex = hexa.substr(-1);
-      opacityHex += opacityHex;
-      colorHex = hexa.substr(-4, 3);
-    }
-    var opacity = .45; // TODO Magic convert hex to 0 to 1
-    return { opacity: opacity, hex: colorHex };
+  if (hsl().test(token)) {
+    type = 'hsl';
   }
-};
+  else if (hsla().test(token)) {
+    type = 'hsla';
+  }
+  else if (rgb().test(token)) {
+    type = 'rgb';
+  }
+  else if (rgba().test(token)) {
+    type = 'rgba';
+  }
+  else if (hex({strict:true}).test(token)) {
+    type = 'hex';
+  }
+  else if (hexa({strict:true}).test(token)) {
+    type = 'hexa';
+  }
+  else if (names[token]) {
+    type = 'named';
+  }
+  else {
+    return inputToken;
+  }
+  return _applyColorTransform(token, type, method);
+}
+
+function _applyColorTransform(color, type, colorblindTransform) {
+  var preTransformColor;
+  var opacity;
+  if (type === 'hexa') {
+    var hexaObject = _separateHexa(color);
+    preTransformColor = onecolor(hexaObject.hex);
+    opacity = hexaObject.opacity;
+  }
+  else {
+    preTransformColor = onecolor(color)
+    opacity = preTransformColor.alpha();
+  }
+  var colorblindHex = colorblind[colorblindTransform](preTransformColor.hex());
+  var postTransformColor = onecolor(colorblindHex);
+  var opacityAppliedColor = postTransformColor.alpha(opacity);
+  return opacityAppliedColor[supportedMethods[type]]();
+}
+
+function _separateHexa(hexa) {
+  var opacityHex;
+  var colorHex;
+  if (hexa.length > 5) {
+    opacityHex = hexa.substr(-2);
+    colorHex = hexa.substr(-8, 6);
+  }
+  else {
+    opacityHex = hexa.substr(-1);
+    opacityHex += opacityHex;
+    colorHex = hexa.substr(-4, 3);
+  }
+  var opacity = .45; // TODO Magic convert hex to 0 to 1
+  return { opacity: opacity, hex: colorHex };
+}
+
+module.exports = transform;
