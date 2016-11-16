@@ -1,462 +1,283 @@
-var postcss = require("postcss");
-var colorblindPlugin = require("..");
+var test = require('ava');
+var postcss = require('postcss');
+var colorblindPlugin = require('..');
 var colorTransformer = require('../src/color-transformer');
 var colorNames = require('css-color-names');
 var colorblind = require('color-blind');
 var onecolor = require('onecolor');
-var chai = require('chai');
-var assert = chai.assert;
-var expect = chai.expect;
 
-describe('Interal Color Transformer', function() {
+function testColorTransformer (t, input, output) {
+  t.deepEqual(colorTransformer(input, 'deuteranopia'), output);
+}
 
-  it('should transform hex', function() {
-    var caseColor = "#123";
-    var caseColor2 = "#000";
-    var caseColor3 = "#fff";
-    var caseColor4 = "#f06d06";
-    assert.equal(colorTransformer(caseColor, 'deuteranopia'), colorblind.deuteranopia(caseColor));
-    assert.equal(colorTransformer(caseColor2, 'deuteranopia'), colorblind.deuteranopia(caseColor2));
-    assert.equal(colorTransformer(caseColor3, 'deuteranopia'), colorblind.deuteranopia(caseColor3));
-    assert.equal(colorTransformer(caseColor4, 'deuteranopia'), colorblind.deuteranopia(caseColor4));
-  });
-
-  it('should transform hexa', function() {
-    var hexaColor = "#1234";
-    var hexColor = "#123";
-    var opacity = '0.45';
-    var hexaColor2 = "#9344ABCD";
-    var hexColor2 = "#9344AB";
-    var opacity2 = '0.45';
-    var hexaColor3 = "#FFFFFFFF";
-    var hexColor3 = "#FFFFFF";
-    var opacity3 = '0.45';
-    var hexaColor4 = "#0000";
-    var hexColor4 = "#000";
-    var opacity4 = '0.45';
-
-    assert.equal(colorTransformer(hexaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(opacity).cssa());
-    assert.equal(colorTransformer(hexaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(opacity2).cssa());
-    assert.equal(colorTransformer(hexaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(opacity3).cssa());
-    assert.equal(colorTransformer(hexaColor4, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor4)).alpha(opacity4).cssa());
-  });
-
-  it('should transform named colors', function() {
-    var caseColor = "mediumSeaGreen";
-    var hexColor = "#3CB371";
-    var caseColor2 = "PapayaWhip";
-    var hexColor2 = "#FFEFD5";
-    var caseColor3 = "thistle";
-    var hexColor3 = "#D8BFD8";
-    var caseColor4 = "BlanchedAlmond";
-    var hexColor4 = "#FFEBCD";
-    var caseColor5 = "rebeccaPurple";
-    var hexColor5 = "#639";
-    assert.equal(colorTransformer(caseColor, 'deuteranopia'), colorblind.deuteranopia(hexColor));
-    assert.equal(colorTransformer(caseColor2, 'deuteranopia'), colorblind.deuteranopia(hexColor2));
-    assert.equal(colorTransformer(caseColor3, 'deuteranopia'), colorblind.deuteranopia(hexColor3));
-    assert.equal(colorTransformer(caseColor4, 'deuteranopia'), colorblind.deuteranopia(hexColor4));
-    assert.equal(colorTransformer(caseColor5, 'deuteranopia'), colorblind.deuteranopia(hexColor5));
-  });
-
-  it('should transform rgb', function() {
-    var rgbColor = "rgb(30, 50, 200)";
-    var hexColor = "#1E32C8";
-    var rgbColor2 = "rgb(100, 200, 0)";
-    var hexColor2 = "#64C800";
-    var rgbColor3 = "rgb(150,50,50)";
-    var hexColor3 = "#963232";
-    assert.equal(colorTransformer(rgbColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
-    assert.equal(colorTransformer(rgbColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
-    assert.equal(colorTransformer(rgbColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
-  });
-
-  it('should transform rgba', function() {
-    var rgbaColor = "rgba(30, 50, 200, 1)";
-    var hexColor = "#1E32C8";
-    var alpha = 1
-    var rgbaColor2 = "rgba(100, 200, 0, 0)";
-    var hexColor2 = "#64C800";
-    var alpha2 = 0;
-    var rgbaColor3 = "rgba(150,50,50,.4)";
-    var hexColor3 = "#963232";
-    var alpha3 = .4;
-
-    assert.equal(colorTransformer(rgbaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
-    assert.equal(colorTransformer(rgbaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
-    assert.equal(colorTransformer(rgbaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
-  });
-
-  it('should transform hsl', function() {
-    var hslColor = "hsl(30, 50%, 50%)";
-    var hexColor = "#BF8040";
-    var hslColor2 = "hsl(100, 80%, 30%)";
-    var hexColor2 = "#388A0F";
-    var hslColor3 = "hsl(150,50%,50%)";
-    var hexColor3 = "#40BF80";
-    assert.equal(colorTransformer(hslColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).css());
-    assert.equal(colorTransformer(hslColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).css());
-    assert.equal(colorTransformer(hslColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).css());
-  });
-
-  it('should transform hsla', function() {
-    var hslaColor = "hsla(30, 50%, 50%, 1)";
-    var hexColor = "#BF8040";
-    var alpha = 1
-    var hslaColor2 = "hsla(100, 80%, 30%, 0)";
-    var hexColor2 = "#388A0F";
-    var alpha2 = 0;
-    var hslaColor3 = "hsla(150,50%,50%,.4)";
-    var hexColor3 = "#40BF80";
-    var alpha3 = .4;
-
-    assert.equal(colorTransformer(hslaColor, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor)).alpha(alpha).cssa());
-    assert.equal(colorTransformer(hslaColor2, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor2)).alpha(alpha2).cssa());
-    assert.equal(colorTransformer(hslaColor3, 'deuteranopia'), onecolor(colorblind.deuteranopia(hexColor3)).alpha(alpha3).cssa());
-  });
-
-  it('should not transform not-color tokens', function() {
-    assert.equal(colorTransformer('3px'), '3px');
-    assert.equal(colorTransformer('not a color'), 'not a color');
-    assert.equal(colorTransformer('http://www.bluehost.com/index.html#f06d06'), 'http://www.bluehost.com/index.html#f06d06');
-  });
-
+['#123', '#000', '#fff', '#f06d06'].forEach(function(hex, index) {
+  test(
+    'should transform hex (' + (index + 1) + ')',
+    testColorTransformer,
+    hex,
+    colorblind.deuteranopia(hex)
+  );
 });
 
-describe('PostCSS Plugin', function() {
-  var postCss;
-
-  beforeEach(function() {
-    postCss = postcss();
-  });
-
-  it('should do a simple hex deuteranopia transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "#FFCC00";
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      color: ${colorblind.deuteranopia(caseColor)};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a simple hex achromatopsia transform', function() {
-    postCss.use(colorblindPlugin({method:'achromatopsia'}));
-    var caseColor = "#D929E2";
-    var input = `
-    .some-color {
-      border: 3px ${caseColor} solid;
-      font-size: 12px;
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      border: 3px ${colorblind.achromatopsia(caseColor)} solid;
-      font-size: 12px;
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a simple named color deuteranopia transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "red";
-    var ansColor = colorblind.deuteranopia(colorNames[caseColor]);
-    var input = `
-    .some-color {
-      border: 3px ${caseColor} solid;
-      font-size: 12px;
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      border: 3px ${ansColor} solid;
-      font-size: 12px;
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a multi tritanopia transform', function() {
-    postCss.use(colorblindPlugin({method:'tritanopia'}));
-    var caseColor = "#D929E2";
-    var caseColor2 = "#B28200";
-    var caseColor3 = "lime";
-    var ansColor3 = colorblind.tritanopia(colorNames[caseColor3]);
-    var input = `
-    .some-color {
-      border: 3px ${caseColor} dashed;
-      color: ${caseColor2};
-      font-size: 12px;
-    }
-    #other-thing {
-      border-color: ${caseColor3}
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      border: 3px ${colorblind.tritanopia(caseColor)} dashed;
-      color: ${colorblind.tritanopia(caseColor2)};
-      font-size: 12px;
-    }
-    #other-thing {
-      border-color: ${ansColor3}
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a rgb transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = 'rgb(100,200,150)';
-    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-    var answer = `
-    .some-color {
-      color: ${transformedColor};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a rgba transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = 'rgba(100,200,150,.4)';
-    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-    var answer = `
-    .some-color {
-      color: ${transformedColor};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a hsl transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "hsl(120, 30%, 80%)";
-    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
-    var input = `
-    .some-color {
-      color: ${onecolor(caseColor).css()};
-    }
-    `;
-    var answer = `
-    .some-color {
-      color: ${transformedColor};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do a hsla transform', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "hsla(120, 30%, 80%, .8)";
-    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
-    var input = `
-    .some-color {
-      color: ${onecolor(caseColor).cssa()};
-    }
-    `;
-    var answer = `
-    .some-color {
-      color: ${transformedColor};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should work inside gradients', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "hsla(120, 30%, 80%, .8)";
-    var transformedColor = colorTransformer(caseColor, 'deuteranopia');
-    var input = `
-    .some-color {
-      background: linear-gradient(#000000, ${onecolor(caseColor).cssa()});
-    }
-    `;
-    var answer = `
-    .some-color {
-      background: linear-gradient(#000000, ${transformedColor});
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should do no transforms on a CSS file with no colors', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var input = `
-    .some-thing #blue {
-      background-image: url(blue.jpg);
-      display: inline-block;
-    }
-    h1.other-thing {
-      background-image: url('http://www.example.com/red/blue#333');
-      border-color: transparent;
-      display: flex;
-      color: lolnotacolor;
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, input);
-  });
-
+[{
+  hexa: '#1234',
+  hex: '#123',
+  opacity: '0.45',
+}, {
+  hexa: '#9344ABCD',
+  hex: '#9344AB',
+  opacity: '0.45',
+}, {
+  hexa: '#FFFFFFFF',
+  hex: '#FFFFFF',
+  opacity: '0.45',
+}, {
+  hexa: '#0000',
+  hex: '#000',
+  opacity: '0.45',
+}].forEach(function(map, index) {
+  test(
+    'should transform hexa (' + (index + 1) + ')',
+    testColorTransformer,
+    map.hexa,
+    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.opacity).cssa()
+  );
 });
 
-describe('PostCSS Plugin Edge Cases', function() {
-  var postCss;
+var keywordMap = {
+  mediumSeaGreen: '#3CB371',
+  PapayaWhip: '#FFEFD5',
+  thistle: '#D8BFD8',
+  BlanchedAlmond: '#FFEBCD',
+  rebeccaPurple: '#639',
+};
 
-  beforeEach(function() {
-    postCss = postcss();
+Object.keys(keywordMap).forEach(function(keyword, index) {
+  var hex = keywordMap[keyword];
+  test(
+    'should transform named color (' + (index + 1) + ')',
+    testColorTransformer,
+    keyword,
+    colorblind.deuteranopia(hex)
+  );
+});
+
+var hexRgbMap = {
+  '#1E32C8': 'rgb(30, 50, 200)',
+  '#64C800': 'rgb(100, 200, 0)',
+  '#963232': 'rgb(150,50,50)',
+};
+
+Object.keys(hexRgbMap).forEach(function(hex, index) {
+  var rgb = hexRgbMap[hex];
+  test(
+    'should transform rgb (' + (index + 1) + ')',
+    testColorTransformer,
+    rgb,
+    onecolor(colorblind.deuteranopia(hex)).css()
+  );
+});
+
+[{
+  rgb: 'rgba(30, 50, 200, 1)',
+  hex: '#1E32C8',
+  alpha: 1,
+}, {
+  rgb: 'rgba(100, 200, 0, 0)',
+  hex: '#64C800',
+  alpha: 0,
+}, {
+  rgb: 'rgba(150,50,50,.4)',
+  hex: '#963232',
+  alpha: .4,
+}].forEach(function(map, index) {
+  test(
+    'should transform rgba (' + (index + 1) + ')',
+    testColorTransformer,
+    map.rgb,
+    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa()
+  );
+});
+
+var hexHslMap = {
+  '#BF8040': 'hsl(30, 50%, 50%)',
+  '#388A0F': 'hsl(100, 80%, 30%)',
+  '#40BF80': 'hsl(150,50%,50%)',
+};
+
+Object.keys(hexHslMap).forEach(function(hex, index) {
+  var hsl = hexHslMap[hex];
+  test(
+    'should transform hsl (' + (index + 1) + ')',
+    testColorTransformer,
+    hsl,
+    onecolor(colorblind.deuteranopia(hex)).css()
+  );
+});
+
+[{
+  hsl: 'hsla(30, 50%, 50%, 1)',
+  hex: '#BF8040',
+  alpha: 1,
+}, {
+  hsl: 'hsla(100, 80%, 30%, 0)',
+  hex: '#388A0F',
+  alpha: 0,
+}, {
+  hsl: 'hsla(150,50%,50%,.4)',
+  hex: '#40BF80',
+  alpha: .4,
+}].forEach(function(map, index) {
+  test(
+    'should transform hsla (' + (index + 1) + ')',
+    testColorTransformer,
+    map.hsl,
+    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa()
+  );
+});
+
+[
+  '3px',
+  'not a color',
+  'http://www.bluehost.com/index.html#f06d06'
+].forEach(function(value, index) {
+  test(
+    'should not transform ' + value,
+    testColorTransformer,
+    value,
+    value
+  );
+});
+
+function testPostCSS (t, input, output, options) {
+  return postcss(colorblindPlugin(options)).process(input).then(function(result) {
+    t.deepEqual(result.css, output);
   });
+}
 
-  it('should assume deuteranopia given no parameter', function() {
-    postCss.use(colorblindPlugin());
-    var caseColor = "#FFCC00";
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
+test(
+  'should do a simple hex deuteranopia transform',
+  testPostCSS,
+  `.some-color { color: #FFCC00 }`,
+  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`
+);
 
-    var answer = `
-    .some-color {
-      color: ${colorblind.deuteranopia(caseColor)};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
+test(
+  'should do a simple hex achromatopsia transform',
+  testPostCSS,
+  `.some-color { color: #D929E2 }`,
+  `.some-color { color: ${colorblind.achromatopsia('#D929E2')} }`,
+  {method: 'achromatopsia'}
+);
+
+test(
+  'should do a simple named color deuteranopia transform',
+  testPostCSS,
+  `.some-color { border: 3px red solid; font-size: 12px }`,
+  `.some-color { border: 3px ${colorblind.deuteranopia(colorNames.red)} solid; font-size: 12px }`
+);
+
+test(
+  'should do a multi tritanopia transform',
+  testPostCSS,
+  `.some-color { border: 3px #D929E2 solid; color: lime }`,
+  `.some-color { border: 3px ${colorblind.tritanopia('#D929E2')} solid; color: ${colorblind.tritanopia('lime')} }`,
+  {method: 'tritanopia'}
+);
+
+test(
+  'should do a rgb transform',
+  testPostCSS,
+  `.some-color { color: rgb(100,200,150) }`,
+  `.some-color { color: ${colorTransformer('rgb(100,200,150)', 'deuteranopia')} }`
+);
+
+test(
+  'should do a rgba transform',
+  testPostCSS,
+  `.some-color { color: rgb(100,200,150,.4) }`,
+  `.some-color { color: ${colorTransformer('rgb(100,200,150,.4)', 'deuteranopia')} }`
+);
+
+test(
+  'should do a hsl transform',
+  testPostCSS,
+  `.some-color { color: hsl(120, 30%, 80%) }`,
+  `.some-color { color: ${colorTransformer('hsl(120, 30%, 80%)', 'deuteranopia')} }`
+);
+
+test(
+  'should do a hsla transform',
+  testPostCSS,
+  `.some-color { color: hsla(120, 30%, 80%, .8) }`,
+  `.some-color { color: ${colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia')} }`
+);
+
+test(
+  'should work inside gradients',
+  testPostCSS,
+  `.some-color { background: linear-gradient(#000000, hsla(120, 30%, 80%, .8)) }`,
+  `.some-color { background: linear-gradient(#000000, ${colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia')}) }`
+);
+
+var noTransforms = `
+.some-thing #blue {
+  background-image: url(blue.jpg);
+  display: inline-block;
+}
+h1.other-thing {
+  background-image: url('http://www.example.com/red/blue#333');
+  border-color: transparent;
+  display: flex;
+  color: lolnotacolor;
+}
+`;
+
+test(
+  'should do no transforms on a CSS file with no colors',
+  testPostCSS,
+  noTransforms,
+  noTransforms
+);
+
+test(
+  'should handle weird capitalization of method names',
+  testPostCSS,
+  `.some-color { color: #FFCC00 }`,
+  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`,
+  {method: 'DEuTerAnopiA'}
+);
+
+test(
+  'should handle weird whitespace',
+  testPostCSS,
+  `.some-color { color: #FFCC00 }`,
+  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`,
+  {method: ' deuteranopia      '}
+);
+
+test(
+  'should handle capitalized color names',
+  testPostCSS,
+  `.some-color { color: ALICebLuE }`,
+  `.some-color { color: ${colorblind.deuteranopia(colorNames.aliceblue)} }`
+);
+
+var fontName = `
+.some-font {
+  font-family: 'Helvetica Neue', sans-serif;
+}
+`;
+
+test(
+  'should not mangle font names',
+  testPostCSS,
+  fontName,
+  fontName
+);
+
+test('should throw an error on a bad method name', function(t) {
+  t.throws(function () {
+    return testPostCSS(t, 'h1{}', 'h1{}', {method:'bad method name'})
   });
-
-  it('should handle weird capitalization of method names', function() {
-    postCss.use(colorblindPlugin({method:'DEuTerAnopiA'}));
-    var caseColor = "#FFCC00";
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      color: ${colorblind.deuteranopia(caseColor)};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should handle weird whitespace', function() {
-    postCss.use(colorblindPlugin({method:' deuteranopia      '}));
-    var caseColor = "#FFCC00";
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      color: ${colorblind.deuteranopia(caseColor)};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should handle capitalized color names', function() {
-    postCss.use(colorblindPlugin({method:'deuteranopia'}));
-    var caseColor = "ALICebLuE";
-    var ansColor = colorblind.deuteranopia(colorNames[caseColor.toLowerCase()]);
-    var input = `
-    .some-color {
-      color: ${caseColor};
-    }
-    `;
-
-    var answer = `
-    .some-color {
-      color: ${ansColor};
-    }
-    `;
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, answer);
-  });
-
-  it('should not mangle font names', function() {
-    postCss.use(colorblindPlugin());
-    var input = `
-    .some-font {
-      font-family: 'Helvetica Neue', sans-serif;
-    }
-    `;
-
-    var processed = postCss
-      .process(input)
-      .css;
-    assert.equal(processed, input);
-  });
-
-  it('should throw an error on a bad method name', function() {
-    expect(function() {
-      postCss.use(colorblindPlugin({method:'bad method name'}));
-    })
-    .to.throw();
-  });
-
 });
