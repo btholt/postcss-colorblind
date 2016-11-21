@@ -149,8 +149,12 @@ Object.keys(hexHslMap).forEach(function(hex, index) {
   );
 });
 
+function getProcessor (options) {
+  return postcss(colorblindPlugin(options));
+}
+
 function testPostCSS (t, input, output, options) {
-  return postcss(colorblindPlugin(options)).process(input).then(function(result) {
+  return getProcessor(options).process(input).then(function(result) {
     t.deepEqual(result.css, output);
   });
 }
@@ -219,6 +223,12 @@ test(
   `.some-color { background: linear-gradient(#000000, hsla(120, 30%, 80%, .8)) }`,
   `.some-color { background: linear-gradient(#000000, ${colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia')}) }`
 );
+
+test('should process images and yield an inlined data url', t => {
+  return getProcessor().process('a{background:url(fixture.jpg)}').then(function(result) {
+    t.deepEqual(result.css.indexOf('data:image/jpeg;base64'), 17);
+  });
+});
 
 var noTransforms = `
 .some-thing #blue {

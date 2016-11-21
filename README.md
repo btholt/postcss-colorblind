@@ -2,21 +2,34 @@
 
 ## Why?
 
-The biggest reason is that as many developers don't have problems seeing color, they never stop to consider that their (or their constituents') choices of colors make their website unusuable and frustrating to those who can't see some shades of color. It's not even small problem either; lots of people struggle with red and green.
+The biggest reason is that as many developers don't have problems seeing color,
+they never stop to consider that their (or their constituents') choices of
+colors make their website unusable and frustrating to those who can't see some
+shades of color. It's not even a small problem either; lots of people struggle
+with red and green.
 
-However, there are JavaScript bookmarklets that let you do this on the fly without having to run a build step. I built this with the thought in mind you could create an automated step to create a report of how you're doing with color.
+However, there are JavaScript bookmarklets that let you do this on the fly
+without having to run a build step. I built this with the thought in mind you
+could create an automated step to create a report of how you're doing
+with color.
 
 And lastly, building plugins for PostCSS is so damn easy and fun.
 
-Plugin currently works for any place a CSS color is declared in hex, named color (like `red` or `papayawhip`), rgb, rgba, hsl, and hsla. Support for images forthcoming.
+This plugin currently works for any place a CSS color is declared, whether it's
+a named color (like `red` or `papayawhip`), hex, rgb, rgba, hsl or hsla. It
+supports gradients and will also convert any linked images into color adjusted
+embedded data.
 
 ## Install
 
-`npm install postcss-colorblind`
+```
+npm install postcss-colorblind
+```
 
 ## Setup
 
-To make this module as effective as possible, make this the last module that modifies your CSS.
+To make this module as effective as possible, make this the last module that
+modifies your CSS.
 
 ```javascript
 var fs = require("fs")
@@ -25,27 +38,30 @@ var colorblindPlugin = require("postcss-colorblind");
 
 var css = fs.readFileSync("input.css", "utf8");
 
-var processed = postcss()
+postcss()
   .use(colorblindPlugin({method:'achromatopsia'}))
   .process(css)
-  .css;
-fs.writeFileSync('output.css', processed);
+  .then(function(result) {
+    fs.writeFileSync('output.css', result.css);
+  });
 ```
 
 ## Parameters
 
 ### method _(default: deuteranopia)_
 
-The module expects an object with a method name that it can give to the [color-blind](https://github.com/skratchdot/color-blind) module. Thus, as of writing, any of the following will work:
+The module expects an object with a method name that it can give to the
+[color-blind](https://github.com/skratchdot/color-blind) module. Thus, as of
+writing, any of the following will work:
 
-- protanomaly
-- protanopia
-- deuteranomaly
-- deuteranopia
-- tritanomaly
-- tritanopia
-- achromatomaly
-- achromatopsia
+- `protanomaly`
+- `protanopia`
+- `deuteranomaly`
+- `deuteranopia`
+- `tritanomaly`
+- `tritanopia`
+- `achromatomaly`
+- `achromatopsia`
 
 ## Color Blindness Table
 
