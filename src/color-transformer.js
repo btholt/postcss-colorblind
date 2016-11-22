@@ -79,8 +79,10 @@ function _separateHexa(hexa) {
     opacityHex += opacityHex;
     colorHex = hexa.substr(-4, 3);
   }
-  var opacity = .45; // TODO Magic convert hex to 0 to 1
-  return { opacity: opacity, hex: colorHex };
+  return {
+    hex: colorHex,
+    opacity: Math.round((parseInt(opacityHex, 16) / 255) * 100) / 100,
+  };
 }
 
 module.exports = transform;

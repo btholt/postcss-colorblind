@@ -22,19 +22,19 @@ function testColorTransformer (t, input, output) {
 [{
   hexa: '#1234',
   hex: '#123',
-  opacity: '0.45',
+  opacity: '0.27',
 }, {
   hexa: '#9344ABCD',
   hex: '#9344AB',
-  opacity: '0.45',
+  opacity: '0.8',
 }, {
   hexa: '#FFFFFFFF',
   hex: '#FFFFFF',
-  opacity: '0.45',
+  opacity: '1',
 }, {
   hexa: '#0000',
   hex: '#000',
-  opacity: '0.45',
+  opacity: '0',
 }].forEach(function(map, index) {
   test(
     'should transform hexa (' + (index + 1) + ')',
