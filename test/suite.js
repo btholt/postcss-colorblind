@@ -1,3 +1,4 @@
+var path = require('path');
 var test = require('ava');
 var postcss = require('postcss');
 var colorblindPlugin = require('..');
@@ -225,7 +226,7 @@ test(
 );
 
 test('should process images and yield an inlined data url', t => {
-  return getProcessor().process('a{background:url(fixture.jpg)}').then(function(result) {
+  return getProcessor().process(`a{background:url(${path.join(__dirname, 'fixture.jpg')})}`).then(function(result) {
     t.deepEqual(result.css.indexOf('data:image/jpeg;base64'), 17);
   });
 });

@@ -26,8 +26,8 @@
   },
   "homepage": "https://github.com/btholt/postcss-colorblind#readme",
   "devDependencies": {
-    "ava": "^0.16.0",
-    "nyc": "^9.0.1"
+    "ava": "^0.17.0",
+    "nyc": "^10.0.0"
   },
   "dependencies": {
     "color-blind": "^0.1.0",
