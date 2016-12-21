@@ -160,6 +160,10 @@ function testPostCSS (t, input, output, options) {
   });
 }
 
+function testPassthrough (t, input, options) {
+  return testPostCSS(t, input, input, options);
+}
+
 test(
   'should do a simple hex deuteranopia transform',
   testPostCSS,
@@ -231,24 +235,19 @@ test('should process images and yield an inlined data url', t => {
   });
 });
 
-var noTransforms = `
-.some-thing #blue {
-  background-image: url(blue.jpg);
-  display: inline-block;
-}
-h1.other-thing {
-  background-image: url('http://www.example.com/red/blue#333');
-  border-color: transparent;
-  display: flex;
-  color: lolnotacolor;
-}
-`;
-
 test(
   'should do no transforms on a CSS file with no colors',
-  testPostCSS,
-  noTransforms,
-  noTransforms
+  testPassthrough,
+  `.some-thing #blue {
+    background-image: url(blue.jpg);
+    display: inline-block;
+  }
+  h1.other-thing {
+    background-image: url('http://www.example.com/red/blue#333');
+    border-color: transparent;
+    display: flex;
+    color: lolnotacolor;
+  }`
 );
 
 test(
@@ -274,17 +273,10 @@ test(
   `.some-color { color: ${colorblind.deuteranopia(colorNames.aliceblue)} }`
 );
 
-var fontName = `
-.some-font {
-  font-family: 'Helvetica Neue', sans-serif;
-}
-`;
-
 test(
   'should not mangle font names',
-  testPostCSS,
-  fontName,
-  fontName
+  testPassthrough,
+  `.some-font { font-family: 'Helvetica Neue', sans-serif; }`
 );
 
 test('should throw an error on a bad method name', function(t) {
