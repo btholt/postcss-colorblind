@@ -7,16 +7,41 @@ var colorNames = require('css-color-names');
 var colorblind = require('color-blind');
 var onecolor = require('onecolor');
 
-function testColorTransformer (t, input, output) {
-  t.deepEqual(colorTransformer(input, 'deuteranopia'), output);
+function getProcessor (options) {
+  return postcss(colorblindPlugin(options));
+}
+
+function testPostCSS (t, input, output, options) {
+  return getProcessor(options).process(input).then(function(result) {
+    t.deepEqual(result.css, output);
+  });
+}
+
+function testPassthrough (t, input, options) {
+  return testPostCSS(t, input, input, options);
+}
+
+function getFixture (color) {
+  return `.some-color { color: ${color}; }`;
+}
+
+function testColorMutation (t, color, method) {
+  if (!method) {
+    method = 'deuteranopia';
+  }
+  return testPostCSS(
+    t,
+    getFixture(color),
+    getFixture(colorblind[method](color)),
+    {method: method}
+  );
 }
 
 ['#123', '#000', '#fff', '#f06d06'].forEach(function(hex, index) {
   test(
     'should transform hex (' + (index + 1) + ')',
-    testColorTransformer,
-    hex,
-    colorblind.deuteranopia(hex)
+    testColorMutation,
+    hex
   );
 });
 
@@ -39,9 +64,9 @@ function testColorTransformer (t, input, output) {
 }].forEach(function(map, index) {
   test(
     'should transform hexa (' + (index + 1) + ')',
-    testColorTransformer,
-    map.hexa,
-    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.opacity).cssa()
+    testPostCSS,
+    getFixture(map.hexa),
+    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.opacity).cssa())
   );
 });
 
@@ -57,9 +82,8 @@ Object.keys(keywordMap).forEach(function(keyword, index) {
   var hex = keywordMap[keyword];
   test(
     'should transform named color (' + (index + 1) + ')',
-    testColorTransformer,
-    keyword,
-    colorblind.deuteranopia(hex)
+    testColorMutation,
+    keyword
   );
 });
 
@@ -73,9 +97,9 @@ Object.keys(hexRgbMap).forEach(function(hex, index) {
   var rgb = hexRgbMap[hex];
   test(
     'should transform rgb (' + (index + 1) + ')',
-    testColorTransformer,
-    rgb,
-    onecolor(colorblind.deuteranopia(hex)).css()
+    testPostCSS,
+    getFixture(rgb),
+    getFixture(onecolor(colorblind.deuteranopia(hex)).css())
   );
 });
 
@@ -94,9 +118,9 @@ Object.keys(hexRgbMap).forEach(function(hex, index) {
 }].forEach(function(map, index) {
   test(
     'should transform rgba (' + (index + 1) + ')',
-    testColorTransformer,
-    map.rgb,
-    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa()
+    testPostCSS,
+    getFixture(map.rgb),
+    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa())
   );
 });
 
@@ -110,9 +134,9 @@ Object.keys(hexHslMap).forEach(function(hex, index) {
   var hsl = hexHslMap[hex];
   test(
     'should transform hsl (' + (index + 1) + ')',
-    testColorTransformer,
-    hsl,
-    onecolor(colorblind.deuteranopia(hex)).css()
+    testPostCSS,
+    getFixture(hsl),
+    getFixture(onecolor(colorblind.deuteranopia(hex)).css())
   );
 });
 
@@ -131,52 +155,35 @@ Object.keys(hexHslMap).forEach(function(hex, index) {
 }].forEach(function(map, index) {
   test(
     'should transform hsla (' + (index + 1) + ')',
-    testColorTransformer,
-    map.hsl,
-    onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa()
+    testPostCSS,
+    getFixture(map.hsl),
+    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa())
   );
 });
 
 [
   '3px',
   'not a color',
-  'http://www.bluehost.com/index.html#f06d06'
-].forEach(function(value, index) {
+  'url(http://www.bluehost.com/index.html#f06d06)'
+].forEach(function(value) {
   test(
     'should not transform ' + value,
-    testColorTransformer,
-    value,
-    value
+    testPassthrough,
+    getFixture(value)
   );
 });
 
-function getProcessor (options) {
-  return postcss(colorblindPlugin(options));
-}
-
-function testPostCSS (t, input, output, options) {
-  return getProcessor(options).process(input).then(function(result) {
-    t.deepEqual(result.css, output);
-  });
-}
-
-function testPassthrough (t, input, options) {
-  return testPostCSS(t, input, input, options);
-}
-
 test(
   'should do a simple hex deuteranopia transform',
-  testPostCSS,
-  `.some-color { color: #FFCC00 }`,
-  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`
+  testColorMutation,
+  `#FFCC00`
 );
 
 test(
   'should do a simple hex achromatopsia transform',
-  testPostCSS,
-  `.some-color { color: #D929E2 }`,
-  `.some-color { color: ${colorblind.achromatopsia('#D929E2')} }`,
-  {method: 'achromatopsia'}
+  testColorMutation,
+  `#D929E2`,
+  'achromatopsia'
 );
 
 test(
@@ -197,29 +204,29 @@ test(
 test(
   'should do a rgb transform',
   testPostCSS,
-  `.some-color { color: rgb(100,200,150) }`,
-  `.some-color { color: ${colorTransformer('rgb(100,200,150)', 'deuteranopia')} }`
+  getFixture('rgb(100,200,150)'),
+  getFixture(colorTransformer('rgb(100,200,150)', 'deuteranopia'))
 );
 
 test(
   'should do a rgba transform',
   testPostCSS,
-  `.some-color { color: rgb(100,200,150,.4) }`,
-  `.some-color { color: ${colorTransformer('rgb(100,200,150,.4)', 'deuteranopia')} }`
+  getFixture('rgb(100,200,150,.4)'),
+  getFixture(colorTransformer('rgb(100,200,150,.4)', 'deuteranopia'))
 );
 
 test(
   'should do a hsl transform',
   testPostCSS,
-  `.some-color { color: hsl(120, 30%, 80%) }`,
-  `.some-color { color: ${colorTransformer('hsl(120, 30%, 80%)', 'deuteranopia')} }`
+  getFixture('hsl(120, 30%, 80%)'),
+  getFixture(colorTransformer('hsl(120, 30%, 80%)', 'deuteranopia'))
 );
 
 test(
   'should do a hsla transform',
   testPostCSS,
-  `.some-color { color: hsla(120, 30%, 80%, .8) }`,
-  `.some-color { color: ${colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia')} }`
+  getFixture('hsla(120, 30%, 80%, .8)'),
+  getFixture(colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia'))
 );
 
 test(
@@ -253,24 +260,24 @@ test(
 test(
   'should handle weird capitalization of method names',
   testPostCSS,
-  `.some-color { color: #FFCC00 }`,
-  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`,
+  getFixture('#FFCC00'),
+  getFixture(colorblind.deuteranopia('#FFCC00')),
   {method: 'DEuTerAnopiA'}
 );
 
 test(
   'should handle weird whitespace',
   testPostCSS,
-  `.some-color { color: #FFCC00 }`,
-  `.some-color { color: ${colorblind.deuteranopia('#FFCC00')} }`,
+  getFixture('#FFCC00'),
+  getFixture(colorblind.deuteranopia('#FFCC00')),
   {method: ' deuteranopia      '}
 );
 
 test(
   'should handle capitalized color names',
   testPostCSS,
-  `.some-color { color: ALICebLuE }`,
-  `.some-color { color: ${colorblind.deuteranopia(colorNames.aliceblue)} }`
+  getFixture('ALICebLuE'),
+  getFixture(colorblind.deuteranopia('aliceblue'))
 );
 
 test(
