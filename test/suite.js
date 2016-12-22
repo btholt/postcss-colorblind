@@ -2,7 +2,6 @@ var path = require('path');
 var test = require('ava');
 var postcss = require('postcss');
 var colorblindPlugin = require('..');
-var colorTransformer = require('../src/color-transformer');
 var colorNames = require('css-color-names');
 var colorblind = require('color-blind');
 var onecolor = require('onecolor');
@@ -160,7 +159,7 @@ test(
   'should work inside gradients',
   testPostCSS,
   `.some-color { background: linear-gradient(#000000, hsla(120, 30%, 80%, .8)) }`,
-  `.some-color { background: linear-gradient(#000000, ${colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia')}) }`
+  `.some-color { background: linear-gradient(#000000, ${onecolor(colorblind.deuteranopia('#bddbbd')).alpha('0.8').cssa()}) }`
 );
 
 test('should process images and yield an inlined data url', t => {
