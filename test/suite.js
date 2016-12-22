@@ -157,34 +157,6 @@ test(
 );
 
 test(
-  'should do a rgb transform',
-  testPostCSS,
-  getFixture('rgb(100,200,150)'),
-  getFixture(colorTransformer('rgb(100,200,150)', 'deuteranopia'))
-);
-
-test(
-  'should do a rgba transform',
-  testPostCSS,
-  getFixture('rgb(100,200,150,.4)'),
-  getFixture(colorTransformer('rgb(100,200,150,.4)', 'deuteranopia'))
-);
-
-test(
-  'should do a hsl transform',
-  testPostCSS,
-  getFixture('hsl(120, 30%, 80%)'),
-  getFixture(colorTransformer('hsl(120, 30%, 80%)', 'deuteranopia'))
-);
-
-test(
-  'should do a hsla transform',
-  testPostCSS,
-  getFixture('hsla(120, 30%, 80%, .8)'),
-  getFixture(colorTransformer('hsla(120, 30%, 80%, .8)', 'deuteranopia'))
-);
-
-test(
   'should work inside gradients',
   testPostCSS,
   `.some-color { background: linear-gradient(#000000, hsla(120, 30%, 80%, .8)) }`,
