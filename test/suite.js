@@ -6,24 +6,9 @@ var colorTransformer = require('../src/color-transformer');
 var colorNames = require('css-color-names');
 var colorblind = require('color-blind');
 var onecolor = require('onecolor');
-
-function getProcessor (options) {
-  return postcss(colorblindPlugin(options));
-}
-
-function testPostCSS (t, input, output, options) {
-  return getProcessor(options).process(input).then(function(result) {
-    t.deepEqual(result.css, output);
-  });
-}
-
-function testPassthrough (t, input, options) {
-  return testPostCSS(t, input, input, options);
-}
-
-function getFixture (color) {
-  return `.some-color { color: ${color}; }`;
-}
+var getProcessor = require('./_getProcessor');
+var testPostCSS = require('./_testPostCSS');
+var getFixture = require('./_getFixture');
 
 function testColorMutation (t, color, method) {
   if (!method) {
@@ -46,27 +31,51 @@ function testColorMutation (t, color, method) {
 });
 
 [{
-  hexa: '#1234',
+  from: '#1234',
   hex: '#123',
-  opacity: '0.27',
+  alpha: '0.27',
 }, {
-  hexa: '#9344ABCD',
+  from: '#9344ABCD',
   hex: '#9344AB',
-  opacity: '0.8',
+  alpha: '0.8',
 }, {
-  hexa: '#FFFFFFFF',
+  from: '#FFFFFFFF',
   hex: '#FFFFFF',
-  opacity: '1',
+  alpha: '1',
 }, {
-  hexa: '#0000',
+  from: '#0000',
   hex: '#000',
-  opacity: '0',
+  alpha: '0',
+}, {
+  from: 'rgba(30, 50, 200, 1)',
+  hex: '#1E32C8',
+  alpha: 1,
+}, {
+  from: 'rgba(100, 200, 0, 0)',
+  hex: '#64C800',
+  alpha: 0,
+}, {
+  from: 'rgba(150,50,50,.4)',
+  hex: '#963232',
+  alpha: .4,
+}, {
+  from: 'hsla(30, 50%, 50%, 1)',
+  hex: '#BF8040',
+  alpha: 1,
+}, {
+  from: 'hsla(100, 80%, 30%, 0)',
+  hex: '#388A0F',
+  alpha: 0,
+}, {
+  from: 'hsla(150,50%,50%,.4)',
+  hex: '#40BF80',
+  alpha: .4,
 }].forEach(function(map, index) {
   test(
-    'should transform hexa (' + (index + 1) + ')',
+    `should transform ${map.from} (${index + 1})`,
     testPostCSS,
-    getFixture(map.hexa),
-    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.opacity).cssa())
+    getFixture(map.from),
+    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa())
   );
 });
 
@@ -103,27 +112,6 @@ Object.keys(hexRgbMap).forEach(function(hex, index) {
   );
 });
 
-[{
-  rgb: 'rgba(30, 50, 200, 1)',
-  hex: '#1E32C8',
-  alpha: 1,
-}, {
-  rgb: 'rgba(100, 200, 0, 0)',
-  hex: '#64C800',
-  alpha: 0,
-}, {
-  rgb: 'rgba(150,50,50,.4)',
-  hex: '#963232',
-  alpha: .4,
-}].forEach(function(map, index) {
-  test(
-    'should transform rgba (' + (index + 1) + ')',
-    testPostCSS,
-    getFixture(map.rgb),
-    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa())
-  );
-});
-
 var hexHslMap = {
   '#BF8040': 'hsl(30, 50%, 50%)',
   '#388A0F': 'hsl(100, 80%, 30%)',
@@ -137,39 +125,6 @@ Object.keys(hexHslMap).forEach(function(hex, index) {
     testPostCSS,
     getFixture(hsl),
     getFixture(onecolor(colorblind.deuteranopia(hex)).css())
-  );
-});
-
-[{
-  hsl: 'hsla(30, 50%, 50%, 1)',
-  hex: '#BF8040',
-  alpha: 1,
-}, {
-  hsl: 'hsla(100, 80%, 30%, 0)',
-  hex: '#388A0F',
-  alpha: 0,
-}, {
-  hsl: 'hsla(150,50%,50%,.4)',
-  hex: '#40BF80',
-  alpha: .4,
-}].forEach(function(map, index) {
-  test(
-    'should transform hsla (' + (index + 1) + ')',
-    testPostCSS,
-    getFixture(map.hsl),
-    getFixture(onecolor(colorblind.deuteranopia(map.hex)).alpha(map.alpha).cssa())
-  );
-});
-
-[
-  '3px',
-  'not a color',
-  'url(http://www.bluehost.com/index.html#f06d06)'
-].forEach(function(value) {
-  test(
-    'should not transform ' + value,
-    testPassthrough,
-    getFixture(value)
   );
 });
 
@@ -243,21 +198,6 @@ test('should process images and yield an inlined data url', t => {
 });
 
 test(
-  'should do no transforms on a CSS file with no colors',
-  testPassthrough,
-  `.some-thing #blue {
-    background-image: url(blue.jpg);
-    display: inline-block;
-  }
-  h1.other-thing {
-    background-image: url('http://www.example.com/red/blue#333');
-    border-color: transparent;
-    display: flex;
-    color: lolnotacolor;
-  }`
-);
-
-test(
   'should handle weird capitalization of method names',
   testPostCSS,
   getFixture('#FFCC00'),
@@ -278,12 +218,6 @@ test(
   testPostCSS,
   getFixture('ALICebLuE'),
   getFixture(colorblind.deuteranopia('aliceblue'))
-);
-
-test(
-  'should not mangle font names',
-  testPassthrough,
-  `.some-font { font-family: 'Helvetica Neue', sans-serif; }`
 );
 
 test('should throw an error on a bad method name', function(t) {
