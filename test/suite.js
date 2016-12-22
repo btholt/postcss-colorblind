@@ -17,7 +17,7 @@ function testColorMutation (t, color, method) {
   return testPostCSS(
     t,
     getFixture(color),
-    getFixture(colorblind[method](color)),
+    getFixture(colorblind[method.toLowerCase().trim()](color)),
     {method: method}
   );
 }
@@ -199,25 +199,22 @@ test('should process images and yield an inlined data url', t => {
 
 test(
   'should handle weird capitalization of method names',
-  testPostCSS,
-  getFixture('#FFCC00'),
-  getFixture(colorblind.deuteranopia('#FFCC00')),
-  {method: 'DEuTerAnopiA'}
+  testColorMutation,
+  '#FFCC00',
+  'DEuTerAnopiA'
 );
 
 test(
   'should handle weird whitespace',
-  testPostCSS,
-  getFixture('#FFCC00'),
-  getFixture(colorblind.deuteranopia('#FFCC00')),
-  {method: ' deuteranopia      '}
+  testColorMutation,
+  '#FFCC00',
+  ' deuteranopia      '
 );
 
 test(
   'should handle capitalized color names',
-  testPostCSS,
-  getFixture('ALICebLuE'),
-  getFixture(colorblind.deuteranopia('aliceblue'))
+  testColorMutation,
+  'ALICebLuE'
 );
 
 test('should throw an error on a bad method name', function(t) {
