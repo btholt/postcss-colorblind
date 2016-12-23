@@ -78,6 +78,27 @@ function testColorMutation (t, color, method) {
   );
 });
 
+var solidColors = {
+  /* hex/rgb */
+  '#1E32C8': 'rgb(30, 50, 200)',
+  '#64C800': 'rgb(100, 200, 0)',
+  '#963232': 'rgb(150,50,50)',
+  /* hex/hsl */
+  '#BF8040': 'hsl(30, 50%, 50%)',
+  '#388A0F': 'hsl(100, 80%, 30%)',
+  '#40BF80': 'hsl(150,50%,50%)',
+}
+
+Object.keys(solidColors).forEach(function(key, index) {
+  var out = solidColors[key];
+  test(
+    `should transform ${out} (${index + 1})`,
+    testPostCSS,
+    getFixture(out),
+    getFixture(onecolor(colorblind.deuteranopia(key)).css())
+  );
+});
+
 var keywordMap = {
   mediumSeaGreen: '#3CB371',
   PapayaWhip: '#FFEFD5',
@@ -92,38 +113,6 @@ Object.keys(keywordMap).forEach(function(keyword, index) {
     'should transform named color (' + (index + 1) + ')',
     testColorMutation,
     keyword
-  );
-});
-
-var hexRgbMap = {
-  '#1E32C8': 'rgb(30, 50, 200)',
-  '#64C800': 'rgb(100, 200, 0)',
-  '#963232': 'rgb(150,50,50)',
-};
-
-Object.keys(hexRgbMap).forEach(function(hex, index) {
-  var rgb = hexRgbMap[hex];
-  test(
-    'should transform rgb (' + (index + 1) + ')',
-    testPostCSS,
-    getFixture(rgb),
-    getFixture(onecolor(colorblind.deuteranopia(hex)).css())
-  );
-});
-
-var hexHslMap = {
-  '#BF8040': 'hsl(30, 50%, 50%)',
-  '#388A0F': 'hsl(100, 80%, 30%)',
-  '#40BF80': 'hsl(150,50%,50%)',
-};
-
-Object.keys(hexHslMap).forEach(function(hex, index) {
-  var hsl = hexHslMap[hex];
-  test(
-    'should transform hsl (' + (index + 1) + ')',
-    testPostCSS,
-    getFixture(hsl),
-    getFixture(onecolor(colorblind.deuteranopia(hex)).css())
   );
 });
 
