@@ -94,4 +94,4 @@ MIT
 
 ## Author
 
-:heart: [Brian Holt](http://twitter.com/holtbt)
+:heart: [Brian Holt](http://twitter.com/holtbt), [Ben Briggs](https://twitter.com/ben_eb)
