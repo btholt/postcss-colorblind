@@ -3,7 +3,7 @@
 ## Why?
 
 The biggest reason is that as many developers don't have problems seeing color,
-they never stop to consider that their (or their constituents') choices of
+they never stop to consider that their (or their colleagues') choices of
 colors make their website unusable and frustrating to those who can't see some
 shades of color. It's not even a small problem either; lots of people struggle
 with red and green.
